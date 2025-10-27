@@ -21,16 +21,20 @@ int main(void) {
             return 1;
         }
     }
-    board = create_board(10,10);
-    srand(time(NULL));
-    // fill the board with random data for now
-    for (int i = 0; i<10; i++)
+    else // if no file given, generate a new board
     {
-        for (int j = 0; j<10; j++) 
+        board = create_board(10,10); 
+        srand(time(NULL));
+        // fill the board with random data for now
+        for (int i = 0; i<10; i++)
         {
-            board->cells[i][j].alive = rand() & 1;
+            for (int j = 0; j<10; j++) 
+            {
+                board->cells[i][j].alive = rand() & 1;
+            }
         }
     }
+    
 
     printf("Enter number of generations to simulate: ");
     scanf("%d", &generations);

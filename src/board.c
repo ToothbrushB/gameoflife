@@ -6,34 +6,36 @@
 // Create a board with given dimensions
 Board *create_board(uint32_t rows, uint32_t cols)
 {
-    // TODO Create the board
+    // make array of row pointers
     // this malloc each of the cells 
     Cell **cells = malloc(sizeof(Cell *) * rows);
     if (cells == NULL)
         exit(1);
     for (uint32_t i = 0; i < rows; i++)
     {
+        // make each row of cells
         cells[i] = malloc(sizeof(Cell) * cols);
         for (uint32_t j = 0; j < cols; j++)
         {
+            // initialize each cell
             cells[i][j].alive = false;
             cells[i][j].x = i;
             cells[i][j].y = j;
         }
     }
+    // create the board
     Board *b = malloc(sizeof(Board));
     b->rows = rows;
     b->cols = cols;
     b->cells = cells;
-
+    
     return b;
 }
 
 // Free all memory associated with a board
 void free_board(Board *board)
 {
-    // TODO See the notes on freeing memory
-    free(board->cells);
+    // TODO need to free the memory!!!
     free(board);
 }
 
@@ -52,7 +54,6 @@ void print_board(Board *board)
         printf("\n");
         printf("");
     }
-    // TODO
 }
 
 // Update the board to the next generation (placeholder)
@@ -65,31 +66,30 @@ void update_board(Board *board)
 // Load a board from a file (placeholder)
 Board *load_board_from_file(const char *filename)
 {
-    // TODO: Read rows/cols and cell states from file
     // format: uint32 (rows), uint32 (cols), cell, cell, cell, cell
-    FILE *f = fopen(filename, "r");
+    FILE *f = fopen(filename, "r"); // open the file
     if (f == NULL)
         exit(1);
 
     uint32_t rows;
     uint32_t cols;
 
-    if (fread(&rows, sizeof(rows), 1, f) == 0)
+    if (fread(&rows, sizeof(rows), 1, f) == 0) // read number of rows
     {
         fclose(f);
         exit(1);
     }
-    if (fread(&cols, sizeof(cols), 1, f) == 0)
+    if (fread(&cols, sizeof(cols), 1, f) == 0) // read number of columns
     {
         fclose(f);
         exit(1);
     }
 
-    Cell **cells = malloc(sizeof(Cell *) * rows);
+    Cell **cells = malloc(sizeof(Cell *) * rows); // allocate array of row pointers
     if (cells == NULL)
         exit(1);
 
-    for (uint32_t i = 0; i < rows; i++)
+    for (uint32_t i = 0; i < rows; i++) // populate each row
     {
         cells[i] = malloc(sizeof(Cell) * cols);
         for (uint32_t j = 0; j < cols; j++)
@@ -115,22 +115,22 @@ Board *load_board_from_file(const char *filename)
 void save_board_to_file(Board *board, const char *filename)
 {
     // TODO: Write board dimensions and cell states to file
-    FILE *f = fopen(filename, "w");
+    FILE *f = fopen(filename, "w"); // open file
     if (f == NULL)
         exit(1);
 
-    uint32_t rows = board->rows;
-    uint32_t cols = board->cols;
+    uint32_t rows = board->rows; // get rows
+    uint32_t cols = board->cols; // get cols
 
-    if (fwrite(&rows, sizeof(uint32_t), 1, f) == 0)
+    if (fwrite(&rows, sizeof(uint32_t), 1, f) == 0) // write rows
         exit(1);
-    if (fwrite(&cols, sizeof(uint32_t), 1, f) == 0)
+    if (fwrite(&cols, sizeof(uint32_t), 1, f) == 0) // write cols
         exit(1);
     for (uint32_t i = 0; i < rows; i++)
     {
         for (uint32_t j = 0; j < cols; j++)
         {
-            Cell c = board->cells[i][j];
+            Cell c = board->cells[i][j]; // write each cell in order
             if (fwrite(&c, sizeof(Cell), 1, f) == 0)
             {
                 fclose(f);
