@@ -7,6 +7,7 @@
 Board *create_board(uint32_t rows, uint32_t cols)
 {
     // TODO Create the board
+    // this malloc each of the cells 
     Cell **cells = malloc(sizeof(Cell *) * rows);
     if (cells == NULL)
         exit(1);
@@ -39,7 +40,7 @@ void free_board(Board *board)
 // Print the board to the console
 void print_board(Board *board)
 {
-
+    //this goes through the row and cols and checking if each value if each value is alive
     for(uint32_t i=0;i<board->rows;i++){
         for(uint32_t j=0;j<board->cols;j++){
             if(board->cells[i][j].alive){
@@ -49,6 +50,7 @@ void print_board(Board *board)
             }
         }
         printf("\n");
+        printf("");
     }
     // TODO
 }
@@ -57,6 +59,7 @@ void print_board(Board *board)
 void update_board(Board *board)
 {
     // TODO: Implement the Game of Life rules here
+    
 }
 
 // Load a board from a file (placeholder)
