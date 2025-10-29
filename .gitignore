@@ -1,0 +1,17 @@
+# Ignore object files
+*.o
+*.obj
+
+# Common binary and compiled files
+*.out
+*.exe
+*.bin
+*.class
+*.so
+*.a
+*.dll
+
+# Common build/output directories
+build/
+bin/
+obj/

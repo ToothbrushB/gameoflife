@@ -17,24 +17,26 @@ int main(void) {
         for (int i = 0; filename[i]; i++) {
             if (filename[i] == '\n') filename[i] = '\0';
         }
-        Board *board = load_board_from_file(filename);
+        board = load_board_from_file(filename);
         if (!board) {
             printf("Error loading board from file.\n");
             return 1;
         }
-    } 
+        boardCopy = create_board(board->rows, board->cols);
+    }   
     else // if no file given, generate a new board
     {
         int number;
         printf("Enter a number: ");  
-        if (scanf("%d", &number) != 1) {
+        scanf("%i", &number);
+        if (number != 1) {
             board = create_board(number,number); 
-            board = create_board(number,number);
+            boardCopy = create_board(number,number);
             srand(time(NULL)); 
         }
         else{
-            board = create_board(10,10); 
-            boardCopy = create_board(10,10); 
+            board = create_board(100,100); 
+            boardCopy = create_board(100,100); 
             srand(time(NULL));
         }
       
@@ -46,20 +48,19 @@ int main(void) {
         board->cells[2][2].alive = true;
 
     }
-    
 
     printf("Enter number of generations to simulate: ");
     scanf("%d", &generations);
+
 
     for (int i = 0; i < generations; i++) {
         printf("Generation %d:\n", i);
         print_board(board);
         update_board(board, boardCopy); // boardCopy is the new board
-        // swap board and boardCopy
+        // // swap board and boardCopy
         Board *temp = boardCopy;
         boardCopy = board;
         board = temp;
-        sleep(1);
         printf("\n");
     }
 
