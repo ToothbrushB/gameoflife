@@ -7,14 +7,17 @@
 Board *create_board(uint32_t rows, uint32_t cols)
 {
     // make array of row pointers
-    // this malloc each of the cells 
+    // this malloc each of the cells
     Cell **cells = malloc(sizeof(Cell *) * rows);
     if (cells == NULL)
         exit(1);
     for (uint32_t i = 0; i < rows; i++)
     {
         // make each row of cells
-        cells[i] = malloc(sizeof(Cell) * cols);
+        cells[i] = NULL;
+        cells[i] = calloc(sizeof(Cell) * cols);
+        if (cells[i] == NULL)
+            exit(1);
         for (uint32_t j = 0; j < cols; j++)
         {
             // initialize each cell
@@ -28,7 +31,7 @@ Board *create_board(uint32_t rows, uint32_t cols)
     b->rows = rows;
     b->cols = cols;
     b->cells = cells;
-    
+
     return b;
 }
 
@@ -110,7 +113,7 @@ Any dead cell with exactly three live neighbours becomes a live cell, as if by r
             }
 
         }
-    }     
+    }
 }
 
 // Load a board from a file (placeholder)
