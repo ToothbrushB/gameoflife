@@ -27,7 +27,7 @@ void free_board(Board *board);
 void print_board(Board *board);
 
 // Update the board to the next generation
-void update_board(Board *board);
+void update_board(Board *board, Board *boardCopy);
 
 // Load a board from a file
 Board *load_board_from_file(const char *filename);

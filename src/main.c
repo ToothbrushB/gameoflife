@@ -2,11 +2,13 @@
 #include <stdlib.h>
 #include "board.h"
 #include <time.h>
+#include <unistd.h>
 
 int main(void) {
     int generations;
     
     Board *board;
+    Board *boardCopy;
     char filename[256];
     printf("Enter initial board filename: ");
     fgets(filename, sizeof(filename), stdin);
@@ -24,15 +26,15 @@ int main(void) {
     else // if no file given, generate a new board
     {
         board = create_board(10,10); 
+        boardCopy = create_board(10,10); 
         srand(time(NULL));
         // fill the board with random data for now
-        for (int i = 0; i<10; i++)
-        {
-            for (int j = 0; j<10; j++) 
-            {
-                board->cells[i][j].alive = rand() & 1;
-            }
-        }
+        board->cells[0][1].alive = true;
+        board->cells[1][2].alive = true;
+        board->cells[2][0].alive = true;
+        board->cells[2][1].alive = true;
+        board->cells[2][2].alive = true;
+
     }
     
 
@@ -42,7 +44,12 @@ int main(void) {
     for (int i = 0; i < generations; i++) {
         printf("Generation %d:\n", i);
         print_board(board);
-        update_board(board);
+        update_board(board, boardCopy); // boardCopy is the new board
+        // swap board and boardCopy
+        Board *temp = boardCopy;
+        boardCopy = board;
+        board = temp;
+        sleep(1);
         printf("\n");
     }
 
@@ -58,5 +65,6 @@ int main(void) {
         save_board_to_file(board, save_file);
     }
     free_board(board);
+    free_board(boardCopy);
     return 0;
 }

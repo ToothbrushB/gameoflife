@@ -36,31 +36,81 @@ Board *create_board(uint32_t rows, uint32_t cols)
 void free_board(Board *board)
 {
     // TODO need to free the memory!!!
+    for (uint32_t i = 0; i < board->rows; i++)
+    {
+        // make each row of cells
+        free(board->cells[i]);
+    }
     free(board);
 }
 
 // Print the board to the console
 void print_board(Board *board)
 {
-    //this goes through the row and cols and checking if each value if each value is alive
+
     for(uint32_t i=0;i<board->rows;i++){
         for(uint32_t j=0;j<board->cols;j++){
             if(board->cells[i][j].alive){
-                printf("👾");
+                printf("\x1b[33m█");
             }else{
-                printf("💀");
+                printf(" ");
             }
         }
-        printf("\n");
-        printf("");
+        printf("\x1b[0m\n");
     }
 }
 
 // Update the board to the next generation (placeholder)
-void update_board(Board *board)
-{
+void update_board(Board *board, Board *boardCopy){ // board copy is the new board
     // TODO: Implement the Game of Life rules here
-    
+
+     for(uint32_t i=0;i<board->rows;i++){
+        for(uint32_t j=0;j<board->cols;j++){
+            int numAround = 0;
+            // printf("%i %i %i %i\n", i, j, board->rows, board->cols);
+            if(board->cells[i==0 ? (board->rows)-1 : i-1][j==0 ? (board->cols)-1 : j-1].alive){
+                numAround++;
+            }
+            if(board->cells[i==0 ? board->rows-1 : i-1][j].alive){
+               numAround++;
+            }
+            if(board->cells[i][j==0 ? board->cols-1 : j-1].alive){
+               numAround++;
+            }
+            if(board->cells[(i+1) % board->rows][(j+1) % board->cols].alive){
+               numAround++;
+            }
+            if(board->cells[(i+1) % board->rows][j].alive){
+               numAround++;
+            }
+             if(board->cells[i][(j+1) % board->cols].alive){
+               numAround++;
+            }
+             if(board->cells[(i+1) % board->rows][j==0 ? board->cols-1 : j-1].alive){
+               numAround++;
+            }
+             if(board->cells[i==0 ? board->rows-1 : i-1][(j+1) % board->cols].alive){
+               numAround++;
+            }
+            /**
+            Any live cell with fewer than two live neighbours dies, as if by underpopulation.
+Any live cell with two or three live neighbours lives on to the next generation.
+Any live cell with more than three live neighbours dies, as if by overpopulation.
+Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+ */
+            if (board->cells[i][j].alive && numAround<2){
+                boardCopy->cells[i][j].alive = false;
+            }
+            else if(!board->cells[i][j].alive && numAround==3 || board->cells[i][j].alive && (numAround==2 || numAround==3)){
+                boardCopy->cells[i][j].alive = true;
+            }else if (board->cells[i][j].alive && numAround >3) {
+                boardCopy->cells[i][j].alive = false;
+            } else {
+                boardCopy->cells[i][j].alive = board->cells[i][j].alive;
+            }
+
+        }
+    }     
 }
 
 // Load a board from a file (placeholder)
