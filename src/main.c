@@ -22,12 +22,22 @@ int main(void) {
             printf("Error loading board from file.\n");
             return 1;
         }
-    }
+    } 
     else // if no file given, generate a new board
     {
-        board = create_board(10,10); 
-        boardCopy = create_board(10,10); 
-        srand(time(NULL));
+        int number;
+        printf("Enter a number: ");  
+        if (scanf("%d", &number) != 1) {
+            board = create_board(number,number); 
+            board = create_board(number,number);
+            srand(time(NULL)); 
+        }
+        else{
+            board = create_board(10,10); 
+            boardCopy = create_board(10,10); 
+            srand(time(NULL));
+        }
+      
         // fill the board with random data for now
         board->cells[0][1].alive = true;
         board->cells[1][2].alive = true;
