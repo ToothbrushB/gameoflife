@@ -14,16 +14,19 @@ Board *create_board(uint32_t rows, uint32_t cols)
     for (uint32_t i = 0; i < rows; i++)
     {
         // make each row of cells
-        cells[i] = NULL;
         cells[i] = calloc(cols, sizeof(Cell));
-        if (cells[i] == NULL)
+        if (cells[i] == NULL) // if cannot allocate, then free everything
+        {
+            for (uint32_t j = 0; j < i; j++)
+                free(cells[j]);
+
+            free(cells);
             exit(1);
+        }
         for (uint32_t j = 0; j < cols; j++)
         {
             // initialize each cell
             cells[i][j].alive = false;
-            // cells[i][j].x = i;
-            // cells[i][j].y = j;
         }
     }
     // create the board
@@ -44,6 +47,7 @@ void free_board(Board *board)
         // make each row of cells
         free(board->cells[i]);
     }
+    free(board->cells);
     free(board);
 }
 
@@ -56,7 +60,7 @@ void print_board(Board *board)
             if(board->cells[i][j].alive){
                 printf("\x1b[33m█");
             }else{
-                printf("\x1b[0m█");
+                printf(" ");
             }
         }
         printf("\x1b[0m\n");
@@ -120,7 +124,7 @@ Any dead cell with exactly three live neighbours becomes a live cell, as if by r
 Board *load_board_from_file(const char *filename)
 {
     // format: uint32 (rows), uint32 (cols), cell, cell, cell, cell
-    FILE *f = fopen(filename, "rb"); // open the file
+    FILE *f = fopen(filename, "r"); // open the file
     if (f == NULL)
         exit(1);
 
@@ -138,33 +142,39 @@ Board *load_board_from_file(const char *filename)
         exit(1);
     }
 
-    Cell **cells = calloc(rows, sizeof(Cell *)); // allocate array of row pointers
+    Cell **cells = malloc(sizeof(Cell *) * rows); // allocate array of row pointers
     if (cells == NULL)
+    {
         exit(1);
+    }
 
     for (uint32_t i = 0; i < rows; i++) // populate each row
     {
-        cells[i] = calloc(cols, sizeof(Cell));
-        if (cells[i] == NULL)
-            exit(1);
+        cells[i] = malloc(sizeof(Cell) * cols);
         for (uint32_t j = 0; j < cols; j++)
         {
             if (fread(&cells[i][j], sizeof(Cell), 1, f) == 0)
             {
                 fclose(f);
+                free(cells);
                 exit(1);
             }
         }
     }
-    fclose(f);
 
     Board *b = malloc(sizeof(Board));
+    if (b == NULL)
+    {
+        for (uint32_t i = 0; i < rows; i++) free(cells[i]);
+        free(cells);
+        fclose(f);
+        exit(1);
+    }
     b->rows = rows;
     b->cols = cols;
     b->cells = cells;
 
-    // print_board(b);
-    
+    fclose(f);
     return b;
 }
 
@@ -172,8 +182,7 @@ Board *load_board_from_file(const char *filename)
 void save_board_to_file(Board *board, const char *filename)
 {
     // TODO: Write board dimensions and cell states to file
-    
-    FILE *f = fopen(filename, "wb"); // open file
+    FILE *f = fopen(filename, "w"); // open file
     if (f == NULL)
         exit(1);
 
@@ -189,12 +198,13 @@ void save_board_to_file(Board *board, const char *filename)
         for (uint32_t j = 0; j < cols; j++)
         {
             Cell c = board->cells[i][j]; // write each cell in order
-            printf("%i,%i,%i\n",i,j,board->cells[i][j].alive);
             if (fwrite(&c, sizeof(Cell), 1, f) == 0)
             {
+                free_board(board);
                 fclose(f);
                 exit(1);
             }
         }
     }
+    fclose(f);
 }
